@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>待办清单 & 送礼功能</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+        body {
+            background: #f8fafc;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .module-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .module-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #1e293b;
+        }
+        .todo-input-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        .todo-input {
+            flex: 1;
+            padding: 10px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+        }
+        .todo-input:focus {
+            border-color: #6366f1;
+        }
+        .todo-add-btn {
+            padding: 0 16px;
+            background: #6366f1;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .todo-list {
+            list-style: none;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .todo-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .todo-item.done .todo-text {
+            text-decoration: line-through;
+            color: #94a3b8;
+        }
+        .todo-delete {
+            color: #ef4444;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+        .todo-stats {
+            margin-top: 12px;
+            font-size: 13px;
+            color: #64748b;
+            text-align: right;
+        }
+        .gift-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .gift-item {
+            text-align: center;
+            padding: 12px 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            background: #f8fafc;
+        }
+        .gift-item:hover {
+            background: #fef3c7;
+            transform: translateY(-2px);
+        }
+        .gift-emoji {
+            font-size: 28px;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .gift-name {
+            font-size: 12px;
+            color: #64748b;
+        }
+        .gift-stats {
+            font-size: 13px;
+            color: #f59e0b;
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+        .gift-records {
+            max-height: 200px;
+            overflow-y: auto;
+            font-size: 13px;
+            color: #64748b;
+        }
+        .gift-record-item {
+            padding: 6px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .float-gift {
+            position: fixed;
+            font-size: 32px;
+            pointer-events: none;
+            animation: floatUp 1.5s ease-out forwards;
+            z-index: 999;
+        }
+        @keyframes floatUp {
+            0% {opacity: 1; transform: translateY(0) scale(1);}
+            100% {opacity: 0; transform: translateY(-100px) scale(1.5);}
+        }
+        @media (max-width: 480px) {
+            .gift-emoji {font-size: 24px;}
+        }
+    </style>
+</head>
+<body>
+    <div class="module-card">
+        <div class="module-title">📝 待办清单</div>
+        <div class="todo-input-row">
+            <input type="text" class="todo-input" id="todoInput" placeholder="输入待办，回车添加">
+            <button class="todo-add-btn" onclick="addTodo()">添加</button>
+        </div>
+        <ul class="todo-list" id="todoList"></ul>
+        <div class="todo-stats" id="todoStats">共 0 项，已完成 0 项</div>
+    </div>
+
+    <div class="module-card">
+        <div class="module-title">🎁 送礼功能</div>
+        <div class="gift-stats" id="giftStats">累计送出：0 份礼物</div>
+        <div class="gift-grid">
+            <div class="gift-item" onclick="sendGift('🌸', '小花')"><span class="gift-emoji">🌸</span><span class="gift-name">小花</span></div>
+            <div class="gift-item" onclick="sendGift('🍬', '糖果')"><span class="gift-emoji">🍬</span><span class="gift-name">糖果</span></div>
+            <div class="gift-item" onclick="sendGift('⭐', '星星')"><span class="gift-emoji">⭐</span><span class="gift-name">星星</span></div>
+            <div class="gift-item" onclick="sendGift('💌', '情书')"><span class="gift-emoji">💌</span><span class="gift-name">情书</span></div>
+            <div class="gift-item" onclick="sendGift('🧸', '小熊')"><span class="gift-emoji">🧸</span><span class="gift-name">小熊</span></div>
+            <div class="gift-item" onclick="sendGift('🍰', '蛋糕')"><span class="gift-emoji">🍰</span><span class="gift-name">蛋糕</span></div>
+            <div class="gift-item" onclick="sendGift('💎', '宝石')"><span class="gift-emoji">💎</span><span class="gift-name">宝石</span></div>
+            <div class="gift-item" onclick="sendGift('🌹', '玫瑰')"><span class="gift-emoji">🌹</span><span class="gift-name">玫瑰</span></div>
+        </div>
+        <div class="gift-records" id="giftRecords"></div>
+    </div>
+
+    <script>
+        // ==================== 【重要】在这里替换成你自己的 JSONBin 信息 ====================
+        const JSONBIN_URL = "https://api.jsonbin.io/v3/b/你的BIN_ID";
+        const JSONBIN_KEY = "你的X-Master-Key";
+        // ==================================================================================
+
+        function escapeHtml(str){const d=document.createElement('div');d.textContent=str;return d.innerHTML;}
+
+        async function loadData(){
+            try{
+                let res=await fetch(JSONBIN_URL+"/latest",{headers:{"X-Master-Key":JSONBIN_KEY}});
+                let json=await res.json();
+                return json.record||{todos:[],giftRecords:[]};
+            }catch(e){
+                console.log("加载失败",e);
+                return {todos:[],giftRecords:[]};
+            }
+        }
+        async function saveData(data){
+            await fetch(JSONBIN_URL,{
+                method:"PUT",
+                headers:{"Content-Type":"application/json","X-Master-Key":JSONBIN_KEY},
+                body:JSON.stringify(data)
+            });
+        }
+
+        // 待办
+        async function loadTodos(){
+            let d=await loadData();
+            renderTodos(d.todos||[]);
+        }
+        function renderTodos(list){
+            let box=document.getElementById("todoList");
+            let stat=document.getElementById("todoStats");
+            box.innerHTML="";
+            list.forEach((item,idx)=>{
+                let li=document.createElement("li");
+                li.className="todo-item"+(item.done?" done":"");
+                li.innerHTML=`
+                    <input type="checkbox" class="todo-checkbox" ${item.done?"checked":""} onchange="toggleTodo(${idx})">
+                    <span class="todo-text">${escapeHtml(item.text)}</span>
+                    <button class="todo-delete" onclick="delTodo(${idx})">删除</button>
+                `;
+                box.appendChild(li);
+            });
+            let done=list.filter(x=>x.done).length;
+            stat.innerText=`共 ${list.length} 项，已完成 ${done} 项`;
+        }
+        async function addTodo(){
+            let inp=document.getElementById("todoInput");
+            let txt=inp.value.trim();
+            if(!txt)return;
+            let d=await loadData();
+            d.todos.unshift({text:txt,done:false});
+            await saveData(d);
+            inp.value="";
+            renderTodos(d.todos);
+        }
+        async function toggleTodo(idx){
+            let d=await loadData();
+            d.todos[idx].done=!d.todos[idx].done;
+            await saveData(d);
+            renderTodos(d.todos);
+        }
+        async function delTodo(idx){
+            let d=await loadData();
+            d.todos.splice(idx,1);
+            await saveData(d);
+            renderTodos(d.todos);
+        }
+        document.getElementById("todoInput").addEventListener("keydown",e=>{if(e.key==="Enter")addTodo();});
+
+        // 送礼
+        async function loadGifts(){
+            let d=await loadData();
+            renderGifts(d.giftRecords||[]);
+        }
+        function renderGifts(list){
+            let stat=document.getElementById("giftStats");
+            let box=document.getElementById("giftRecords");
+            stat.innerText=`累计送出：${list.length} 份礼物`;
+            box.innerHTML="";
+            list.slice(0,20).forEach(item=>{
+                let div=document.createElement("div");
+                div.className="gift-record-item";
+                div.innerText=`${item.emoji} ${item.name} · ${new Date(item.time).toLocaleString()}`;
+                box.appendChild(div);
+            });
+        }
+        async function sendGift(emoji,name){
+            // 动画
+            let el=document.createElement("div");
+            el.className="float-gift";
+            el.innerText=emoji;
+            el.style.left=event.clientX+"px";
+            el.style.top=event.clientY+"px";
+            document.body.appendChild(el);
+            setTimeout(()=>el.remove(),1500);
+
+            // 存数据
+            let d=await loadData();
+            d.giftRecords.unshift({emoji,name,time:Date.now()});
+            if(d.giftRecords.length>50)d.giftRecords=d.giftRecords.slice(0,50);
+            await saveData(d);
+            renderGifts(d.giftRecords);
+        }
+
+        // 初始化
+        loadTodos();
+        loadGifts();
+    </script>
+</body>
+</html>
