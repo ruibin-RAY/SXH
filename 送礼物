@@ -169,8 +169,8 @@
 
     <script>
         // ==================== 【重要】在这里替换成你自己的 JSONBin 信息 ====================
-        const JSONBIN_URL = "https://api.jsonbin.io/v3/b/你的BIN_ID";
-        const JSONBIN_KEY = "你的X-Master-Key";
+        const JSONBIN_URL = "https://api.jsonbin.io/v3/b/6a2c229cf5f4af5e29e70cba";
+        const JSONBIN_KEY = "$2a$10$Uncb.z3KXEWoU9N.nvB9i.1vdgof8J814b0/PoeFnQEvE3cgGg0Ve";
         // ==================================================================================
 
         function escapeHtml(str){const d=document.createElement('div');d.textContent=str;return d.innerHTML;}
